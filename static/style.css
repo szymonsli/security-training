@@ -34,54 +34,81 @@
     font-size: 0.97rem;
     margin-bottom: 1rem;
 }
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #f4f6f8;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
 }
 header {
     background: #2d3e50;
     color: #fff;
-    padding: 1rem 2rem;
+    padding: 1.2rem 2.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.08);
 }
 nav a {
     color: #fff;
-    margin-left: 1rem;
+    margin-left: 1.2rem;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+    border-radius: 4px;
+    padding: 0.2rem 0.7rem;
+}
+nav a:hover {
+    background: rgba(255,255,255,0.13);
+    color: #ffe082;
 }
 .container {
-    max-width: 800px;
-    margin: 2rem auto;
+    max-width: 900px;
+    margin: 2.5rem auto;
     background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(44,62,80,0.10);
+    padding: 2.5rem 2rem;
 }
-h1, h2 {
+ h1, h2 {
     color: #2d3e50;
+    font-weight: 700;
+    letter-spacing: 0.01em;
 }
 button, input[type="submit"] {
-    background: #2d3e50;
+    background: #4f8cff;
     color: #fff;
     border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 4px;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.05rem;
     margin-top: 0.5rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+    transition: background 0.2s, box-shadow 0.2s;
+}
+button:hover, input[type="submit"]:hover {
+    background: #2d3e50;
+    box-shadow: 0 4px 16px rgba(44,62,80,0.13);
 }
 input, textarea {
-    padding: 0.4rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1.5px solid #b0b8c1;
+    border-radius: 6px;
+    margin-bottom: 1.1rem;
     width: 100%;
     box-sizing: border-box;
+    font-size: 1rem;
+    background: #f8fafc;
+    transition: border 0.2s;
+}
+input:focus, textarea:focus {
+    border: 1.5px solid #4f8cff;
+    outline: none;
 }
 ul {
     list-style: none;
@@ -93,14 +120,33 @@ li {
 .product-link {
     color: #2d3e50;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
 }
 .product-link:hover {
+    color: #4f8cff;
     text-decoration: underline;
 }
 .comment {
     background: #f4f6f8;
-    border-radius: 4px;
-    padding: 0.5rem 1rem;
-    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    padding: 0.7rem 1.2rem;
+    margin-bottom: 0.7rem;
+    font-size: 1.01rem;
+    box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+}
+/* Modern avatar style for usernames (optional) */
+.avatar {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #4f8cff;
+    color: #fff;
+    text-align: center;
+    line-height: 32px;
+    font-weight: bold;
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
 }
