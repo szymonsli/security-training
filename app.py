@@ -160,16 +160,38 @@ def add_to_cart(product_id):
 
 @app.route('/checkout')
 def checkout():
+    db = get_db()
+    if 'user_id' in session and 'cart' in session:
+        for pid in session['cart']:
+            cur = db.execute(f"SELECT price FROM products WHERE id = {pid}")
+            product = cur.fetchone()
+            if product:
+                db.execute(f"INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES ({session['user_id']}, {pid}, 1, {product[0]}, datetime('now'))")
+        db.commit()
     session['cart'] = []
     return render_template('checkout.html')
+
+# Profile page with IDOR vulnerability
+@app.route('/profile/<int:user_id>')
+def profile(user_id):
+    db = get_db()
+    cur = db.execute(f"SELECT t.id, p.name, t.quantity, t.total_price, t.created_at FROM transactions t JOIN products p ON t.product_id = p.id WHERE t.user_id = {user_id} ORDER BY t.created_at DESC")
+    transactions = cur.fetchall()
+    cur = db.execute(f"SELECT username FROM users WHERE id = {user_id}")
+    user = cur.fetchone()
+    return render_template('profile.html', transactions=transactions, user=user, user_id=user_id)
 
 if __name__ == '__main__':
     if not os.path.exists(DATABASE):
         with sqlite3.connect(DATABASE) as db:
             db.executescript('''
             CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT);
+            INSERT INTO users (username, password) VALUES ('alice', 'alice123');
+            INSERT INTO users (username, password) VALUES ('bob', 'bob123');
+            INSERT INTO users (username, password) VALUES ('charlie', 'charlie123');
             CREATE TABLE products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, price INTEGER, description TEXT);
             CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, product_id INTEGER, comment TEXT);
+            CREATE TABLE transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, product_id INTEGER, quantity INTEGER, total_price INTEGER, created_at TEXT);
             CREATE TABLE ratings (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, product_id INTEGER, rating INTEGER);
             INSERT INTO products (name, price, description) VALUES ('Widget', 10, 'A useful widget.');
             INSERT INTO products (name, price, description) VALUES ('Gadget', 20, 'A fancy gadget.');
@@ -181,5 +203,11 @@ if __name__ == '__main__':
             INSERT INTO products (name, price, description) VALUES ('Gizmo', 22, 'A high-tech gizmo.');
             INSERT INTO products (name, price, description) VALUES ('Device', 17, 'A reliable device for daily use.');
             INSERT INTO products (name, price, description) VALUES ('Apparatus', 28, 'A sturdy apparatus for any task.');
+            INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES (1, 1, 1, 10, '2025-09-01 10:00:00');
+            INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES (1, 2, 2, 40, '2025-09-02 11:00:00');
+            INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES (2, 3, 1, 15, '2025-09-03 12:00:00');
+            INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES (2, 4, 1, 12, '2025-09-04 13:00:00');
+            INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES (3, 5, 3, 54, '2025-09-05 14:00:00');
+            INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES (3, 6, 1, 25, '2025-09-06 15:00:00');
             ''')
     app.run(debug=True)

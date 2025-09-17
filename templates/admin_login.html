@@ -35,6 +35,9 @@
       <nav>
         <a href="/">Home</a>
         <a href="/cart">Cart</a>
+        {% if session.username %}
+        <a href="/profile/{{ session.user_id }}">My Transactions</a>
+        {% endif %}
       </nav>
     </header>
     <div class="admin-login-form">

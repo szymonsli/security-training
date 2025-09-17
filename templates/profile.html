@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ user[0] if user else 'User' }}'s Profile</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+      .profile-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+      }
+      .profile-table th,
+      .profile-table td {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      .profile-table th {
+        background: #f4f6f8;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div><strong>Demo Shop</strong></div>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/cart">Cart</a>
+        {% if session.username %}
+        <span>Hello, {{ session.username }}!</span>
+        <a href="/profile/{{ session.user_id }}">My Transactions</a>
+        <a href="/logout">Logout</a>
+        {% else %}
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        {% endif %}
+      </nav>
+    </header>
+    <div class="container">
+      <h1>{{ user[0] if user else 'User' }}'s Transaction History</h1>
+      {% if transactions %}
+      <table class="profile-table">
+        <tr>
+          <th>ID</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Total Price</th>
+          <th>Date</th>
+        </tr>
+        {% for t in transactions %}
+        <tr>
+          <td>{{ t[0] }}</td>
+          <td>{{ t[1] }}</td>
+          <td>{{ t[2] }}</td>
+          <td>${{ t[3] }}</td>
+          <td>{{ t[4] }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <p>No transactions found.</p>
+      {% endif %}
+    </div>
+  </body>
+</html>
