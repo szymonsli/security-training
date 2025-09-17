@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ product[1] }}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <div><strong>Demo Shop</strong></div>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/cart">Cart</a>
+        {% if session.username %}
+        <span>Hello, {{ session.username }}!</span>
+        <a href="/logout">Logout</a>
+        {% else %}
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        {% endif %}
+      </nav>
+    </header>
+    <div class="container">
+      <h1>{{ product[1] }}</h1>
+      <p><strong>Price:</strong> ${{ product[2] }}</p>
+      <p>{{ product[3] }}</p>
+      <form method="post">
+        {% if session.username %}
+        <label>Leave a comment:</label>
+        <textarea name="comment"></textarea>
+        <label>Rate this product (1-5):</label>
+        <input type="number" name="rating" min="1" max="5" />
+        <input type="submit" value="Submit" />
+        {% else %}
+        <a href="/login">Login to comment and rate</a>
+        {% endif %}
+      </form>
+      <h2>Comments</h2>
+      <ul>
+        {% for comment, username in comments %}
+        <li class="comment"><b>{{ username }}</b>: {{ comment|safe }}</li>
+        {% endfor %}
+      </ul>
+      <h2>Average Rating: {{ avg_rating or 'No ratings yet' }}</h2>
+      <a href="/add_to_cart/{{ product[0] }}"><button>Add to cart</button></a>
+      <a href="/cart"><button>View Cart</button></a>
+      <a href="/"><button>Back to shop</button></a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+      .admin-section {
+        margin-bottom: 2rem;
+      }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      .admin-table th,
+      .admin-table td {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      .admin-table th {
+        background: #f4f6f8;
+      }
+      .admin-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div><strong>Demo Shop Admin</strong></div>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/cart">Cart</a>
+        <a href="/logout">Logout</a>
+      </nav>
+    </header>
+    <div class="container">
+      <h1>Admin Panel</h1>
+      <div class="admin-section">
+        <h2>Users</h2>
+        <table class="admin-table">
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Actions</th>
+          </tr>
+          {% for user in users %}
+          <tr>
+            <td>{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td>{{ user[2] }}</td>
+            <td class="admin-actions">
+              <form
+                method="post"
+                action="/admin/delete_user/{{ user[0] }}"
+                style="display: inline"
+              >
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div class="admin-section">
+        <h2>Products</h2>
+        <table class="admin-table">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+          {% for product in products %}
+          <tr>
+            <td>{{ product[0] }}</td>
+            <td>{{ product[1] }}</td>
+            <td>{{ product[2] }}</td>
+            <td>{{ product[3] }}</td>
+            <td class="admin-actions">
+              <form
+                method="post"
+                action="/admin/delete_product/{{ product[0] }}"
+                style="display: inline"
+              >
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        <h3>Add Product</h3>
+        <form method="post" action="/admin/add_product">
+          <input type="text" name="name" placeholder="Name" required />
+          <input type="number" name="price" placeholder="Price" required />
+          <input
+            type="text"
+            name="description"
+            placeholder="Description"
+            required
+          />
+          <button type="submit">Add</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

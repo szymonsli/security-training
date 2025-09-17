@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Thank You!</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <div><strong>Demo Shop</strong></div>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/cart">Cart</a>
+        {% if session.username %}
+        <span>Hello, {{ session.username }}!</span>
+        <a href="/logout">Logout</a>
+        {% else %}
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        {% endif %}
+      </nav>
+    </header>
+    <div class="container" style="text-align: center">
+      <h1 style="color: #2d3e50">Thank you for your purchase!</h1>
+      <p>Your order has been placed successfully.</p>
+      <a href="/" style="display: inline-block; margin-top: 2rem"
+        ><button>Back to Shop</button></a
+      >
+    </div>
+  </body>
+</html>

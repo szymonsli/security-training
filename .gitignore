@@ -1,0 +1,5 @@
+.venv
+.virtualenv
+.env
+*.db
+*.log
