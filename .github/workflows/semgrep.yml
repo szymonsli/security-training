@@ -1,38 +1,22 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow file requires a free account on Semgrep.dev to
-# manage rules, file ignores, notifications, and more.
-#
-# See https://semgrep.dev/docs
-
 name: Semgrep
-
 on:
+  pull_request:
+    branches: ["master"]
   push:
-    branches: [ "master" ]
-
-permissions:
-  contents: read
-
+    branches: ["master"]
+      
 jobs:
   semgrep:
-    name: Run Semgrep Scan
+    name: semgrep/ci
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+    container:
+      image: semgrep/semgrep
+    if: (github.actor != 'dependabot[bot]')
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - run: semgrep ci
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install Semgrep
-        run: pip install semgrep
-
-      - name: Run Semgrep with default rules
-        run: semgrep --config=auto --error
