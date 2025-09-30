@@ -17,6 +17,13 @@ jobs:
       image: semgrep/semgrep
     if: (github.actor != 'dependabot[bot]')
     steps:
-      - uses: actions/checkout@v4
-      - run: semgrep ci
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run scan
+        run: semgrep ci --json --output semgrep-report.json
+      - name: Upload Semgrep Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-report
+          path: semgrep-report.json
 
