@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 DATABASE = 'shop.db'
 
+
 # Home page
 @app.route('/')
 def index():
@@ -15,6 +16,7 @@ def index():
     products = cur.fetchall()
     return render_template('index.html', products=products)
 
+
 # Register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -22,10 +24,12 @@ def register():
         username = request.form['username']
         password = request.form['password']
         db = get_db()
-        db.execute(f"INSERT INTO users (username, password) VALUES ('{username}', '{password}')")
+        query = "INSERT INTO users (username, password) VALUES (?, ?)"
+        db.execute(query, (username, password))
         db.commit()
         return redirect('/login')
     return render_template('register.html')
+
 
 # Login
 @app.route('/login', methods=['GET', 'POST'])
@@ -34,7 +38,8 @@ def login():
         username = request.form['username']
         password = request.form['password']
         db = get_db()
-        cur = db.execute(f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'")
+        query = "SELECT * FROM users WHERE username = ? AND password = ?"
+        cur = db.execute(query, (username, password))
         user = cur.fetchone()
         if user:
             session['user_id'] = user[0]
@@ -44,11 +49,13 @@ def login():
             return 'Invalid credentials'
     return render_template('login.html')
 
+
 # Logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
+
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -56,11 +63,13 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
     return db
 
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+
 
 # Admin login and panel
 @app.route('/admin', methods=['GET', 'POST'])
@@ -80,6 +89,7 @@ def admin():
     products = db.execute('SELECT * FROM products').fetchall()
     return render_template('admin.html', users=users, products=products)
 
+
 # Delete user
 @app.route('/admin/delete_user/<int:user_id>', methods=['POST'])
 def admin_delete_user(user_id):
@@ -89,6 +99,7 @@ def admin_delete_user(user_id):
     db.execute(f"DELETE FROM users WHERE id = {user_id}")
     db.commit()
     return redirect('/admin')
+
 
 # Delete product
 @app.route('/admin/delete_product/<int:product_id>', methods=['POST'])
@@ -100,6 +111,7 @@ def admin_delete_product(product_id):
     db.commit()
     return redirect('/admin')
 
+
 # Add product
 @app.route('/admin/add_product', methods=['POST'])
 def admin_add_product():
@@ -109,9 +121,11 @@ def admin_add_product():
     price = request.form['price']
     description = request.form['description']
     db = get_db()
-    db.execute(f"INSERT INTO products (name, price, description) VALUES ('{name}', {price}, '{description}')")
+    query = "INSERT INTO products (name, price, description) VALUES (?, ?, ?)"
+    db.execute(query, (name, price, description))
     db.commit()
     return redirect('/admin')
+
 
 @app.route('/product/<int:product_id>', methods=['GET', 'POST'])
 def product(product_id):
@@ -120,8 +134,11 @@ def product(product_id):
         if 'user_id' in session:
             comment = request.form['comment']
             rating = request.form['rating']
-            db.execute(f"INSERT INTO comments (user_id, product_id, comment) VALUES ({session['user_id']}, {product_id}, '{comment}')")
-            db.execute(f"INSERT INTO ratings (user_id, product_id, rating) VALUES ({session['user_id']}, {product_id}, {rating})")
+            user_id = session['user_id']
+            comments_query = "INSERT INTO comments (user_id, product_id, comment) VALUES (?, ?, ?)"
+            db.execute(comments_query, (user_id, product_id, comment))
+            ratings_query = "INSERT INTO ratings (user_id, product_id, rating) VALUES (?, ?, ?)"
+            db.execute(ratings_query, (user_id, product_id, rating))
             db.commit()
         else:
             return redirect('/login')
@@ -132,6 +149,7 @@ def product(product_id):
     cur = db.execute(f"SELECT AVG(rating) FROM ratings WHERE product_id = {product_id}")
     avg_rating = cur.fetchone()[0]
     return render_template('product.html', product=product, comments=comments, avg_rating=avg_rating)
+
 
 @app.route('/cart')
 def cart():
@@ -147,6 +165,7 @@ def cart():
             cart_items.append(product)
             total += product[2]
     return render_template('cart.html', cart_items=cart_items, total=total)
+
 
 @app.route('/add_to_cart/<int:product_id>')
 def add_to_cart(product_id):
@@ -171,6 +190,7 @@ def checkout():
     session['cart'] = []
     return render_template('checkout.html')
 
+
 # Profile page with IDOR vulnerability
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
@@ -180,6 +200,7 @@ def profile(user_id):
     cur = db.execute(f"SELECT username FROM users WHERE id = {user_id}")
     user = cur.fetchone()
     return render_template('profile.html', transactions=transactions, user=user, user_id=user_id)
+
 
 if __name__ == '__main__':
     if not os.path.exists(DATABASE):
@@ -210,4 +231,4 @@ if __name__ == '__main__':
             INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES (3, 5, 3, 54, '2025-09-05 14:00:00');
             INSERT INTO transactions (user_id, product_id, quantity, total_price, created_at) VALUES (3, 6, 1, 25, '2025-09-06 15:00:00');
             ''')
-    app.run(debug=True)
+    app.run()
